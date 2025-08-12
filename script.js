@@ -1,474 +1,374 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+let currentScreen = 'welcomeScreen';
+let storyIndex = 0;
+let noDodgeCount = 0;
+
+// Navegación entre pantallas
+function nextScreen(screenId) {
+    document.getElementById(currentScreen).classList.remove('active');
+    setTimeout(() => {
+        document.getElementById(screenId).classList.add('active');
+        currentScreen = screenId;
+        
+        if (screenId === 'questionScreen') {
+            startHeartRain();
+            // Agregar efecto de escritura a la pregunta principal
+            setTimeout(() => {
+                const questionElement = document.getElementById('mainQuestion');
+                const originalText = questionElement.innerHTML;
+                questionElement.innerHTML = '';
+                questionElement.style.borderRight = '3px solid #ff1744';
+                questionElement.style.animation = 'blink 1s infinite';
+                
+                let i = 0;
+                const typeEffect = setInterval(() => {
+                    if (i < originalText.length) {
+                        questionElement.innerHTML = originalText.slice(0, i + 1);
+                        i++;
+                    } else {
+                        clearInterval(typeEffect);
+                        questionElement.style.borderRight = 'none';
+                        questionElement.style.animation = 'glow-text 2s infinite alternate, bounce 3s infinite';
+                    }
+                }, 100);
+            }, 1000);
+        } else if (currentScreen === 'celebrationScreen') {
+            startCelebrationEffects();
+        }
+    }, 500);
 }
 
-body {
-    font-family: 'Georgia', serif;
-    background: linear-gradient(135deg, #000000 0%, #1a1a1a 25%, #2d1b69 50%, #4a0e4e 100%);
-    min-height: 100vh;
-    overflow-x: hidden;
-    color: white;
-    cursor: default;
-}
-
-.screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 1s ease-in-out;
-    z-index: 10;
-}
-
-.screen.active {
-    opacity: 1;
-    z-index: 20;
-}
-
-.container {
-    text-align: center;
-    max-width: 900px;
-    padding: 20px;
-    position: relative;
-}
-
-/* Pantalla de inicio */
-.welcome-screen {
-    background: linear-gradient(135deg, #000000 0%, #1a1a1a 30%, #1a1a2e 70%, #16213e 100%);
-}
-
-.welcome-title {
-    font-size: 4rem;
-    margin-bottom: 30px;
-    background: linear-gradient(45deg, #ff1744, #e91e63, #9c27b0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: glow-text 2s infinite alternate;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.welcome-title:hover {
-    transform: scale(1.05);
-}
-
-.start-btn {
-    padding: 20px 50px;
-    font-size: 1.5rem;
-    background: linear-gradient(45deg, #ff1744, #e91e63);
-    border: none;
-    border-radius: 50px;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    animation: pulse 2s infinite;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: bold;
-}
-
-.start-btn:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(255, 23, 68, 0.4);
-}
-
-/* Pantalla de historia */
-.story-screen {
-    background: linear-gradient(135deg, #000000 0%, #1a1a1a 25%, #2d1b69 50%, #4a0e4e 100%);
-}
-
-.story-content {
-    max-width: 700px;
-    margin: 0 auto;
-}
-
-.story-text {
-    font-size: 1.4rem;
-    line-height: 1.8;
-    margin-bottom: 30px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.8s ease;
-}
-
-.story-text.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.next-btn {
-    padding: 15px 40px;
-    font-size: 1.2rem;
-    background: linear-gradient(45deg, #9c27b0, #673ab7);
-    border: none;
-    border-radius: 30px;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin: 10px;
-}
-
-.next-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(156, 39, 176, 0.4);
-}
-
-/* Pantalla de pregunta */
-.question-screen {
-    background: linear-gradient(135deg, #000000 0%, #1a1a1a 25%, #2d1b69 50%, #4a0e4e 75%, #ff1744 100%);
-}
-
-.heart-big {
-    width: 300px;
-    height: 300px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: -1;
-    animation: heartbeat-big 2s infinite ease-in-out;
-}
-
-.heart-big:before,
-.heart-big:after {
-    content: '';
-    width: 150px;
-    height: 240px;
-    position: absolute;
-    left: 75px;
-    top: 0;
-    background: rgba(255, 23, 68, 0.3);
-    border-radius: 75px 75px 0 0;
-    transform: rotate(-45deg);
-    transform-origin: 0 100%;
-    box-shadow: 0 0 50px rgba(255, 23, 68, 0.5);
-}
-
-.heart-big:after {
-    left: 0;
-    transform: rotate(45deg);
-    transform-origin: 100% 100%;
-}
-
-@keyframes heartbeat-big {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    50% { transform: translate(-50%, -50%) scale(1.1); }
-}
-
-.question-title {
-    font-size: 3rem;
-    margin-bottom: 40px;
-    animation: bounce 2s infinite;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.answer-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    flex-wrap: wrap;
-    margin-top: 40px;
-}
-
-.answer-btn {
-    padding: 20px 50px;
-    font-size: 1.5rem;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    position: relative;
-}
-
-.btn-yes {
-    background: linear-gradient(45deg, #00e676, #4caf50);
-    color: white;
-    box-shadow: 0 8px 25px rgba(0, 230, 118, 0.4);
-}
-
-.btn-yes:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 15px 40px rgba(0, 230, 118, 0.6);
-    animation: rainbow 1s infinite;
-}
-
-.btn-no {
-    background: linear-gradient(45deg, #f44336, #e91e63);
-    color: white;
-    box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4);
-    transition: all 0.2s ease;
-}
-
-.btn-no:hover {
-    transform: translateY(-5px);
-}
-
-/* Viñeta de comentario */
-.comment-bubble {
-    position: absolute;
-    bottom: 120%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.9);
-    color: #ff1744;
-    padding: 15px 20px;
-    border-radius: 20px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    border: 2px solid #ff1744;
-    box-shadow: 0 10px 30px rgba(255, 23, 68, 0.4);
-    opacity: 0;
-    animation: bubbleAppear 0.5s ease-out forwards;
-    z-index: 1000;
-}
-
-.comment-bubble:before {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 10px solid transparent;
-    border-top: 10px solid #ff1744;
-}
-
-.comment-bubble:after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 8px solid transparent;
-    border-top: 8px solid rgba(0, 0, 0, 0.9);
-    margin-top: -2px;
-}
-
-@keyframes bubbleAppear {
-    0% { 
-        opacity: 0; 
-        transform: translateX(-50%) translateY(20px) scale(0.8); 
-    }
-    100% { 
-        opacity: 1; 
-        transform: translateX(-50%) translateY(0) scale(1); 
+// Historia interactiva
+function showStoryTexts() {
+    const stories = ['story1', 'story2', 'story3'];
+    
+    if (storyIndex < stories.length) {
+        document.getElementById(stories[storyIndex]).classList.add('show');
+        storyIndex++;
+        
+        if (storyIndex >= stories.length) {
+            setTimeout(() => {
+                document.querySelector('#questionBtn').style.display = 'inline-block';
+                document.querySelector('#storyScreen .next-btn').style.display = 'none';
+            }, 1000);
+        }
     }
 }
 
-@keyframes bubbleDisappear {
-    0% { 
-        opacity: 1; 
-        transform: translateX(-50%) translateY(0) scale(1); 
-    }
-    100% { 
-        opacity: 0; 
-        transform: translateX(-50%) translateY(-20px) scale(0.8); 
-    }
-}
-
-.btn-no-hiding {
-    animation: fadeOutSlow 2s ease-out forwards;
-}
-
-@keyframes fadeOutSlow {
-    0% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.9); }
-    100% { opacity: 0; transform: scale(0.8); pointer-events: none; }
-}
-
-/* Pantalla de celebración */
-.celebration-screen {
-    background: linear-gradient(135deg, #ff1744 0%, #e91e63 50%, #9c27b0 100%);
-    overflow: hidden;
-}
-
-.celebration-content {
-    position: relative;
-    z-index: 10;
-}
-
-.celebration-title {
-    font-size: 4rem;
-    margin-bottom: 30px;
-    animation: celebration-bounce 1s infinite alternate;
-    text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
-}
-
-.celebration-message {
-    font-size: 1.8rem;
-    margin-bottom: 40px;
-    animation: fadeInUp 2s ease-out;
-}
-
-.restart-btn {
-    padding: 15px 40px;
-    font-size: 1.2rem;
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid white;
-    border-radius: 30px;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-}
-
-.restart-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.05);
-}
-
-/* Partículas y efectos */
-.particles {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.particle {
-    position: absolute;
-    border-radius: 50%;
-}
-
-.floating-hearts {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 5;
-}
-
-.floating-heart {
-    position: absolute;
-    font-size: 2rem;
-    animation: float-heart 4s infinite ease-in-out;
-}
-
-/* Animaciones */
-@keyframes glow-text {
-    0% { text-shadow: 0 0 20px rgba(255, 23, 68, 0.5); }
-    100% { text-shadow: 0 0 30px rgba(255, 23, 68, 0.8), 0 0 40px rgba(233, 30, 99, 0.6); }
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-@keyframes bounce {
-    0%, 20%, 60%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-15px); }
-    80% { transform: translateY(-5px); }
-}
-
-@keyframes celebration-bounce {
-    0% { transform: scale(1) rotate(-2deg); }
-    100% { transform: scale(1.1) rotate(2deg); }
-}
-
-@keyframes rainbow {
-    0% { filter: hue-rotate(0deg); }
-    25% { filter: hue-rotate(90deg); }
-    50% { filter: hue-rotate(180deg); }
-    75% { filter: hue-rotate(270deg); }
-    100% { filter: hue-rotate(360deg); }
-}
-
-@keyframes typewriter {
-    from { width: 0; }
-    to { width: 100%; }
-}
-
-@keyframes blink {
-    0%, 50% { border-right-color: #ff1744; }
-    51%, 100% { border-right-color: transparent; }
-}
-
-@keyframes float-heart {
-    0% {
-        transform: translateY(100vh) rotate(0deg);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(-100px) rotate(360deg);
-        opacity: 0;
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .welcome-title, .question-title, .celebration-title {
-        font-size: 2.5rem;
+// Mostrar viñeta de comentario al pasar el cursor
+function showNoComment(btn) {
+    // Solo mostrar la viñeta una vez
+    if (btn.querySelector('.comment-bubble') || btn.classList.contains('btn-no-hiding')) {
+        return;
     }
     
-    .story-text {
+    // Crear viñeta de comentario
+    const bubble = document.createElement('div');
+    bubble.className = 'comment-bubble';
+    bubble.innerHTML = 'Vaya... te dejo solo con SÍ entonces 😏💕';
+    
+    // Posicionar la viñeta relativa al botón
+    btn.style.position = 'relative';
+    btn.appendChild(bubble);
+    
+    // Después de 2.5 segundos, quitar la viñeta y empezar a ocultar el botón
+    setTimeout(() => {
+        bubble.style.animation = 'bubbleDisappear 0.5s ease-out forwards';
+        
+        setTimeout(() => {
+            bubble.remove();
+            
+            // Empezar animación lenta de desaparición del botón "No"
+            btn.classList.add('btn-no-hiding');
+            
+            // Después de que termine la animación, ocultar completamente
+            setTimeout(() => {
+                btn.style.display = 'none';
+                
+                // Hacer el botón "Sí" más prominente
+                const yesBtn = document.querySelector('.btn-yes');
+                yesBtn.style.transform = 'scale(1.1)';
+                yesBtn.style.animation = 'pulse 1s infinite, rainbow 2s infinite, glow 1.5s infinite alternate';
+                yesBtn.innerHTML = '¡ES TU ÚNICA OPCIÓN! 💕✨';
+                
+                // Centrar el botón "Sí"
+                const buttonsContainer = document.querySelector('.answer-buttons');
+                buttonsContainer.style.justifyContent = 'center';
+                
+            }, 2000); // Tiempo de la animación fadeOutSlow
+        }, 500); // Tiempo de bubbleDisappear
+    }, 2500); // Tiempo que permanece visible la viñeta
+}
+
+// Prevenir click en el botón "No" después de que aparezca la viñeta
+function preventNo() {
+    // No hacer nada, solo evitar que se ejecute cualquier acción
+    return false;
+}
+
+// Mostrar celebración
+function showCelebration() {
+    // Crear explosión de corazones inmediata
+    createHeartExplosion();
+    
+    // Efecto de zoom en la pregunta
+    const mainQuestion = document.getElementById('mainQuestion');
+    mainQuestion.style.transform = 'scale(1.2)';
+    mainQuestion.style.color = '#00ff41';
+    mainQuestion.innerHTML = '¡DIJISTE QUE SÍ! 🎉💕';
+    
+    // Cambiar a pantalla de celebración
+    setTimeout(() => {
+        nextScreen('celebrationScreen');
+    }, 2000);
+}
+
+// Efectos de celebración
+function startCelebrationEffects() {
+    // Confetti continuo
+    setInterval(createConfetti, 200);
+    
+    // Cambiar colores de fondo
+    let colorIndex = 0;
+    const colors = [
+        'linear-gradient(135deg, #ff1744 0%, #e91e63 50%, #9c27b0 100%)',
+        'linear-gradient(135deg, #e91e63 0%, #9c27b0 50%, #673ab7 100%)',
+        'linear-gradient(135deg, #9c27b0 0%, #673ab7 50%, #3f51b5 100%)',
+        'linear-gradient(135deg, #ff1744 0%, #ff5722 50%, #e91e63 100%)'
+    ];
+    
+    setInterval(() => {
+        document.querySelector('.celebration-screen').style.background = colors[colorIndex % colors.length];
+        colorIndex++;
+    }, 2000);
+}
+
+// Efectos visuales
+function createSparkles(event) {
+    for (let i = 0; i < 10; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = event.clientX + (Math.random() - 0.5) * 100 + 'px';
+        sparkle.style.top = event.clientY + (Math.random() - 0.5) * 100 + 'px';
+        document.body.appendChild(sparkle);
+        
+        setTimeout(() => sparkle.remove(), 1000);
+    }
+}
+
+function createHeartExplosion() {
+    for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+            const heart = document.createElement('div');
+            heart.innerHTML = ['❤️', '💕', '💖', '💝', '💗'][Math.floor(Math.random() * 5)];
+            heart.style.position = 'fixed';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.top = '100vh';
+            heart.style.fontSize = Math.random() * 3 + 1 + 'rem';
+            heart.style.zIndex = '1000';
+            heart.style.pointerEvents = 'none';
+            heart.style.animation = `float-heart ${Math.random() * 3 + 2}s ease-out forwards`;
+            
+            document.body.appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 5000);
+        }, i * 50);
+    }
+}
+
+function createBrokenHearts() {
+    for (let i = 0; i < 5; i++) {
+        const heart = document.createElement('div');
+        heart.innerHTML = '💔';
+        heart.style.position = 'fixed';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.top = Math.random() * 100 + 'vh';
+        heart.style.fontSize = '2rem';
+        heart.style.zIndex = '1000';
+        heart.style.pointerEvents = 'none';
+        heart.style.animation = 'float-heart 3s ease-out forwards';
+        
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 3000);
+    }
+}
+
+function createConfetti() {
+    const colors = ['#ff1744', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3'];
+    const confetti = document.createElement('div');
+    
+    confetti.style.position = 'fixed';
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.top = '-10px';
+    confetti.style.width = '10px';
+    confetti.style.height = '10px';
+    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.zIndex = '999';
+    confetti.style.pointerEvents = 'none';
+    confetti.style.animation = 'float-heart 4s linear forwards';
+    
+    document.body.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 4000);
+}
+
+function startHeartRain() {
+    setInterval(() => {
+        const heart = document.createElement('div');
+        heart.innerHTML = ['❤️', '💕', '💖'][Math.floor(Math.random() * 3)];
+        heart.className = 'floating-heart';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = Math.random() * 3 + 4 + 's';
+        
+        document.getElementById('floatingHearts').appendChild(heart);
+        
+        setTimeout(() => heart.remove(), 7000);
+    }, 500);
+}
+
+// Reiniciar experiencia
+function restartExperience() {
+    // Reset variables
+    storyIndex = 0;
+    noDodgeCount = 0;
+    
+    // Reset elementos
+    document.querySelectorAll('.story-text').forEach(text => text.classList.remove('show'));
+    document.getElementById('questionBtn').style.display = 'none';
+    document.querySelector('#storyScreen .next-btn').style.display = 'inline-block';
+    
+    const noBtn = document.getElementById('noBtn');
+    noBtn.textContent = 'No... 💔';
+    noBtn.style.transform = 'none';
+    noBtn.style.pointerEvents = 'auto';
+    noBtn.style.opacity = '1';
+    
+    // Reset pregunta principal
+    const mainQuestion = document.getElementById('mainQuestion');
+    mainQuestion.innerHTML = '¿Quieres ser mi novia? 💖';
+    mainQuestion.style.transform = 'scale(1)';
+    mainQuestion.style.color = '#ffffff';
+    
+    // Reset botón "Sí"
+    const yesBtn = document.querySelector('.btn-yes');
+    yesBtn.innerHTML = '¡SÍ, QUIERO! 💕';
+    yesBtn.style.transform = 'scale(1)';
+    yesBtn.style.animation = 'pulse 2s infinite, rainbow 3s infinite';
+    
+    // Reset contenedor de botones
+    const buttonsContainer = document.querySelector('.answer-buttons');
+    buttonsContainer.style.justifyContent = 'center';
+    
+    // Mostrar y resetear botón "No"
+    noBtn.style.display = 'inline-block';
+    noBtn.classList.remove('btn-no-hiding');
+    
+    // Limpiar efectos
+    document.getElementById('floatingHearts').innerHTML = '';
+    
+    // Volver al inicio
+    nextScreen('welcomeScreen');
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    // Crear partículas de fondo
+    setInterval(() => {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.top = '100vh';
+        particle.style.width = particle.style.height = Math.random() * 4 + 2 + 'px';
+        particle.style.background = ['#ff1744', '#e91e63', '#9c27b0'][Math.floor(Math.random() * 3)];
+        particle.style.animation = `float-heart ${Math.random() * 4 + 3}s linear forwards`;
+        
+        document.getElementById('particles').appendChild(particle);
+        
+        setTimeout(() => particle.remove(), 7000);
+    }, 800);
+});
+
+// Efectos de sonido simulados con vibraciones (si está disponible)
+function vibrate(pattern) {
+    if ('vibrate' in navigator) {
+        navigator.vibrate(pattern);
+    }
+}
+
+// Agregar vibración a interacciones importantes
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('start-btn') || 
+        e.target.classList.contains('btn-yes') || 
+        e.target.classList.contains('next-btn')) {
+        vibrate([100, 50, 100]);
+    }
+});
+
+// Efecto cursor personalizado
+document.addEventListener('mousemove', function(e) {
+    // Crear trail de corazones pequeños en el cursor ocasionalmente
+    if (Math.random() < 0.1) {
+        const miniHeart = document.createElement('div');
+        miniHeart.innerHTML = '💕';
+        miniHeart.style.position = 'fixed';
+        miniHeart.style.left = e.clientX + 'px';
+        miniHeart.style.top = e.clientY + 'px';
+        miniHeart.style.fontSize = '0.8rem';
+        miniHeart.style.pointerEvents = 'none';
+        miniHeart.style.zIndex = '999';
+        miniHeart.style.animation = 'fadeInUp 1s ease-out forwards';
+        
+        document.body.appendChild(miniHeart);
+        setTimeout(() => miniHeart.remove(), 1000);
+    }
+});
+
+// Mensajes de motivación si tarda mucho en una pantalla
+let screenTimer;
+
+function resetScreenTimer() {
+    clearTimeout(screenTimer);
+    screenTimer = setTimeout(() => {
+        if (currentScreen === 'welcomeScreen') {
+            showMotivationalMessage("¡Karen te está esperando! 💕 Haz clic para continuar");
+        } else if (currentScreen === 'storyScreen') {
+            showMotivationalMessage("¡Sigue leyendo esta hermosa historia! 📖");
+        } else if (currentScreen === 'questionScreen') {
+            showMotivationalMessage("¡Es el momento de la verdad! 💖");
+        }
+    }, 30000); // 30 segundos
+}
+
+function showMotivationalMessage(message) {
+    const msgDiv = document.createElement('div');
+    msgDiv.innerHTML = message;
+    msgDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 23, 68, 0.9);
+        color: white;
+        padding: 15px 30px;
+        border-radius: 25px;
         font-size: 1.1rem;
-    }
+        z-index: 9999;
+        animation: fadeInUp 0.5s ease-out;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    `;
     
-    .answer-buttons {
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-    }
+    document.body.appendChild(msgDiv);
     
-    .answer-btn {
-        width: 200px;
-    }
-    
-    .heart-big {
-        width: 200px;
-        height: 200px;
-    }
-    
-    .heart-big:before,
-    .heart-big:after {
-        width: 100px;
-        height: 160px;
-        left: 50px;
-    }
-    
-    .heart-big:after {
-        left: 0;
-    }
+    setTimeout(() => {
+        msgDiv.style.animation = 'fadeInUp 0.5s ease-out reverse';
+        setTimeout(() => msgDiv.remove(), 500);
+    }, 4000);
 }
 
-/* Efectos adicionales */
-.sparkle {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: #fff;
-    border-radius: 50%;
-    animation: sparkle 1s infinite;
-}
+// Inicializar timer
+resetScreenTimer();
 
-@keyframes sparkle {
-    0%, 100% { opacity: 0; transform: scale(0); }
-    50% { opacity: 1; transform: scale(1); }
-}
+// Reset timer en cada cambio de pantalla
+const originalNextScreen = nextScreen;
+nextScreen = function(screenId) {
+    resetScreenTimer();
+    return originalNextScreen(screenId);
+};
