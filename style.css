@@ -1,0 +1,63 @@
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#container {
+    text-align: center;
+}
+
+.neon-text {
+    padding: 20px;
+    font-size: 1.8rem;
+    border: 2px solid #ff004c;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #ff004c, 0 0 40px #a000ff;
+    display: inline-block;
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+#buttons {
+    margin-top: 40px;
+}
+
+button {
+    padding: 12px 20px;
+    font-size: 1.2rem;
+    margin: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #fff;
+    transition: transform 0.3s ease;
+}
+
+#yes-btn {
+    background: linear-gradient(45deg, #ff004c, #a000ff);
+    box-shadow: 0 0 10px #ff004c, 0 0 20px #a000ff;
+}
+
+#no-btn {
+    background: linear-gradient(45deg, #ff0000, #ff4d4d);
+    box-shadow: 0 0 10px #ff0000, 0 0 20px #ff4d4d;
+    position: relative;
+}
+
+button:hover {
+    transform: scale(1.1);
+}
+
+.hidden {
+    display: none;
+}
